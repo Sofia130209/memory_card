@@ -115,10 +115,11 @@ shuffled_questions = questions.copy()
 shuffle(shuffled_questions)
 
 def next_question():
-    global current_question
+    global current_question, shuffled_questions
     current_question += 1
     if current_question >= len(shuffled_questions):
-        current_question = 0  # Начать с первого вопроса, если все вопросы закончились
+        current_question = 0
+        shuffle(shuffled_questions)  # Перемешать вопросы заново
     question, right_answer, wrong1, wrong2, wrong3 = shuffled_questions[current_question]
     ask(question, right_answer, wrong1, wrong2, wrong3)
 
