@@ -1,6 +1,5 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QGroupBox, QButtonGroup, QRadioButton, \
-    QPushButton, QLabel
+from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QGroupBox, QButtonGroup, QRadioButton, QPushButton, QLabel
 from random import shuffle
 
 app = QApplication([])
@@ -81,10 +80,20 @@ def show_question():
 
 answers = [rbtn_1, rbtn_2, rbtn_3, rbtn_4]
 
+# Список вопросов
+questions = [
+    ('Государственный язык Бразилии', 'Португальский', 'Бразильский', 'Испанский', 'Итальянский'),
+    ('Год основания Витебска', '974', '1009', '1234', '666'),
+    ('Столица Франции', 'Париж', 'Берлин', 'Рим', 'Мадрид'),
+    ('Самая высокая гора в мире', 'Эверест', 'Килиманджаро', 'Эльбрус', 'Монблан')
+]
+
+current_question = -1  # Индекс текущего вопроса
+
 def ask(question, right_answer, wrong1, wrong2, wrong3):
     shuffle(answers)
     answers[0].setText(right_answer)
-    answers[1]. setText(wrong1)
+    answers[1].setText(wrong1)
     answers[2].setText(wrong2)
     answers[3].setText(wrong3)
     lb_Question.setText(question)
@@ -99,15 +108,35 @@ def check_answer():
     if answers[0].isChecked():
         show_correct('Правильно!')
     else:
-        if answers[1].isChecked() or answers[2].isChecked() or answers[3].isChecked():
-            show_correct('Неверно!')
+        show_correct('Неверно!')
+
+# Перемешанный список вопросов (создаётся один раз)
+shuffled_questions = questions.copy()
+shuffle(shuffled_questions)
+
+def next_question():
+    global current_question
+    current_question += 1
+    if current_question >= len(shuffled_questions):
+        current_question = 0  # Начать с первого вопроса, если все вопросы закончились
+    question, right_answer, wrong1, wrong2, wrong3 = shuffled_questions[current_question]
+    ask(question, right_answer, wrong1, wrong2, wrong3)
+
+
+# Установить начальный вопрос
+next_question()
+
+def on_btn_ok_clicked():
+    if btn_OK.text() == 'Ответить':
+        check_answer()
+    else:
+        next_question()
+
+btn_OK.clicked.connect(on_btn_ok_clicked)
 
 window = QWidget()
 window.setLayout(layout_card)
 window.setWindowTitle('Memo Card')
-
-ask('Государственный язык Бразилии', 'Португальский', 'Бразильский', 'Испанский', 'Итальянский')
-btn_OK.clicked.connect(check_answer)
 
 window.resize(400, 300)
 window.show()
